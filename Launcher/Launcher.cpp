@@ -3,11 +3,11 @@
 //
 #include "Launcher.h"
 #include <iostream>
-#include <iomanip> // Para formatear la salida
-#include "../Actor/Actor.h"
+#include <iomanip>
 #include <unordered_map>
-#include <algorithm> // For std::max
+#include <algorithm>
 #include <sstream>
+#include <stdexcept>
 
 using namespace std;
 
@@ -29,90 +29,117 @@ vector<Tarea> Launcher::crearTareas() {
     };
 }
 
-vector<Actor> Launcher::crearActores() {
-    return {
-        Actor("1", "Agente 1"),
-        Actor("2", "Agente 2"),
-        Actor("3", "Agente 3"),
-        Actor("4", "Agente 4"),
-        Actor("5", "Agencia de Viajes"),
-        Actor("6", "Familiares en Casa"),
-        Actor("7", "CEO")
-    };
+void Launcher::crearActoresConInput() {
+    int numActores;
+    cout << "Ingrese el numero de actores: ";
+    if (!(cin >> numActores)) {
+        throw runtime_error("Error al leer el numero de actores.");
+    }
+    cin.ignore();
+
+    for (int i = 0; i < numActores; ++i) {
+        string id, descripcion;
+        cout << "Ingrese el ID del actor " << i + 1 << ": ";
+        if (!getline(cin, id)) {
+            throw runtime_error("Error al leer el ID del actor.");
+        }
+        cout << "Ingrese la descripcion del actor " << i + 1 << ": ";
+        if (!getline(cin, descripcion)) {
+            throw runtime_error("Error al leer la descripcion del actor.");
+        }
+        actores.emplace_back(id, descripcion);
+    }
 }
 
-void Launcher::asignarTareas(vector<Actor>& actores, const vector<Tarea>& tareas) {
-    // Manually assign tasks to actors
-    actores[0].addTarea(tareas[0]); // Agente 1: Reserva de vuelo
-    actores[0].addTarea(tareas[4]); // Agente 1: Recoger el billete de la agencia
-    actores[0].addTarea(tareas[5]); // Agente 1: Llevar el billete a la oficina
-    actores[0].addTarea(tareas[7]); // Agente 1: Llevar maletas a la oficina
+void Launcher::asignarTareasConInput() {
+    for (auto& actor : actores) {
+        while (true) {
+            string respuesta;
+            cout << "¿Quieres asignarle una nueva tarea al actor " << actor.getDescripcion() << "? (s/n): ";
+            if (!getline(cin, respuesta)) {
+                throw runtime_error("Error al leer la respuesta.");
+            }
 
-    actores[1].addTarea(tareas[1]); // Agente 2: Informar a casa para empacar
-    actores[1].addTarea(tareas[6]); // Agente 2: Recoger las maletas de casa
+            if (respuesta != "s" && respuesta != "S") {
+                break;
+            }
 
-    actores[2].addTarea(tareas[8]); // Agente 3: Conversacion sobre documentos requeridos
-    actores[2].addTarea(tareas[10]); // Agente 3: Reunir documentos
-    actores[2].addTarea(tareas[11]); // Agente 3: Organizar documentos
+            string tareaId;
+            cout << "Ingrese el ID de la tarea para el actor " << actor.getDescripcion() << ": ";
+            if (!getline(cin, tareaId)) {
+                throw runtime_error("Error al leer el ID de la tarea.");
+            }
 
-    actores[3].addTarea(tareas[9]); // Agente 4: Dictar instrucciones para ausencia
-    actores[3].addTarea(tareas[3]); // Agente 4: Preparacion del billete por la agencia (asistencia)
+            auto it = find_if(tareas.begin(), tareas.end(), [&tareaId](const Tarea& tarea) {
+                return tarea.getId() == tareaId;
+            });
 
-    actores[4].addTarea(tareas[3]); // Agencia de Viajes: Preparacion del billete por la agencia
-
-    actores[5].addTarea(tareas[2]); // Familiares en Casa: Empacar maletas
-
-    actores[6].addTarea(tareas[8]); // CEO: Conversacion sobre documentos requeridos
-    actores[6].addTarea(tareas[9]); // CEO: Dictar instrucciones para ausencia
-    actores[6].addTarea(tareas[10]); // CEO: Reunir documentos
-    actores[6].addTarea(tareas[11]); // CEO: Organizar documentos
-    actores[6].addTarea(tareas[12]); // CEO: Viajar al aeropuerto y facturar
-}
-
-std::vector<Tarea> Launcher::getListaDeTareas() const {
-    return tareas;
+            if (it != tareas.end()) {
+                actor.addTarea(*it);
+            } else {
+                cout << "Tarea con ID " << tareaId << " no encontrada." << endl;
+            }
+        }
+    }
 }
 
 void Launcher::ejecutar() {
-    vector<Tarea> tareas = crearTareas();
-    vector<Actor> actores = crearActores();
+    try {
+        tareas = crearTareas();
+        crearActoresConInput();
+        asignarTareasConInput();
 
-    asignarTareas(actores, tareas);
+        unordered_map<string, int> taskEndTimes;
+        int tiempoTotal = 0;
 
-    unordered_map<string, int> taskEndTimes; // Track end times for each task
-    int tiempoTotal = 0;
+        cout << "=== Resumen de tareas por actor ===" << endl;
 
-    cout << "=== Resumen de tareas por actor ===" << endl;
-
-    // Mostrar informacion de cada actor
-    for (const auto& actor : actores) {
-        cout << "Actor: " << actor.getDescripcion() << endl;
-        cout << actor.tostring();
-        int currentTime = 0;
-        for (const auto& tarea : actor.getTareas()) {
-            int startTime = currentTime;
-            if (taskEndTimes.find(tarea.getId()) != taskEndTimes.end()) {
-                startTime = max(startTime, taskEndTimes[tarea.getId()]);
+        for (const auto& actor : actores) {
+            cout << "Actor: " << actor.getDescripcion() << endl;
+            cout << actor.tostring();
+            int currentTime = 0;
+            for (const auto& tarea : actor.getTareas()) {
+                int startTime = currentTime;
+                if (taskEndTimes.find(tarea.getId()) != taskEndTimes.end()) {
+                    startTime = max(startTime, taskEndTimes[tarea.getId()]);
+                }
+                int endTime = startTime + tarea.getDuracion();
+                taskEndTimes[tarea.getId()] = endTime;
+                currentTime = endTime;
             }
-            int endTime = startTime + tarea.getDuracion();
-            taskEndTimes[tarea.getId()] = endTime;
-            currentTime = endTime;
+            cout << "Tiempo total para " << actor.getDescripcion() << ": " << currentTime << " minutos" << endl;
+            tiempoTotal = max(tiempoTotal, currentTime);
+            cout << "----------------------------------" << endl;
         }
-        cout << "Tiempo total para " << actor.getDescripcion() << ": " << currentTime << " minutos" << endl;
-        tiempoTotal = max(tiempoTotal, currentTime);
-        cout << "----------------------------------" << endl;
+
+        cout << "=== Tiempo total para completar todas las tareas ===" << endl;
+        cout << "Tiempo total: " << tiempoTotal << " minutos" << endl;
+
+        cout << "\n=== Verificacion de tiempos ===" << endl;
+        for (const auto& actor : actores) {
+            if (actor.getDuracionTotal() > 100) {
+                cout << "El actor " << actor.getDescripcion() << " NO puede completar sus tareas a tiempo." << endl;
+            } else {
+                cout << "El actor " << actor.getDescripcion() << " puede completar sus tareas a tiempo." << endl;
+            }
+        }
+    } catch (const exception& e) {
+        cerr << "Error: " << e.what() << endl;
     }
+}
 
-    cout << "=== Tiempo total para completar todas las tareas ===" << endl;
-    cout << "Tiempo total: " << tiempoTotal << " minutos" << endl;
+void Launcher::imprimirTareas() {
+    cout << "=== Lista de tareas ===" << endl;
+    for (const auto& tarea : tareas) {
+        cout << tarea.toString() << endl;
+    }
+    cout << "=======================" << endl;
+}
 
-    // Verificar si los actores completan a tiempo
-    cout << "\n=== Verificacion de tiempos ===" << endl;
-    for (const auto& actor : actores) {
-        if (actor.getDuracionTotal() > 100) {
-            cout << "El actor " << actor.getDescripcion() << " NO puede completar sus tareas a tiempo." << endl;
-        } else {
-            cout << "El actor " << actor.getDescripcion() << " puede completar sus tareas a tiempo." << endl;
-        }
+Launcher::Launcher() {
+    try {
+        tareas = crearTareas();
+    } catch (const exception& e) {
+        cerr << "Error al crear tareas: " << e.what() << endl;
     }
 }

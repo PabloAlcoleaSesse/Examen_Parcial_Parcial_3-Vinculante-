@@ -3,9 +3,17 @@
 //
 
 #include "Launcher/Launcher.h"
+#include <iostream>
+#include "Launcher/Launcher.h"
 
 int main() {
-    Launcher launcher;
-    launcher.ejecutar();
+    try {
+        Launcher launcher;
+         launcher.imprimirTareas(); // Print the list of tasks before user input
+        launcher.ejecutar();
+    } catch (const std::exception& e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+        return 1;
+    }
     return 0;
 }

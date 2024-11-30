@@ -11,13 +11,16 @@
 
 class Launcher {
 public:
+    Launcher(); // Add constructor declaration
     void ejecutar();
-    std::vector<Tarea> getListaDeTareas() const; // New method declaration
+    std::vector<Tarea> getListaDeTareas() const;
+    void crearActoresConInput();
+    void asignarTareasConInput();
+    void imprimirTareas();
+
 private:
     std::vector<Tarea> crearTareas();
-    std::vector<Actor> crearActores();
-    void asignarTareas(std::vector<Actor>& actores, const std::vector<Tarea>& tareas);
-    std::vector<Tarea> tareas; // Store the list of tasks
+    std::vector<Actor> actores;
+    std::vector<Tarea> tareas;
 };
-
 #endif //LAUNCHER_H
