@@ -11,7 +11,7 @@
 
 class Launcher {
 public:
-    Launcher(); // Add constructor declaration
+    Launcher(); 
     void ejecutar();
     std::vector<Tarea> getListaDeTareas() const;
     void crearActoresConInput();
@@ -23,4 +23,4 @@ private:
     std::vector<Actor> actores;
     std::vector<Tarea> tareas;
 };
-#endif //LAUNCHER_H
+#endif 
