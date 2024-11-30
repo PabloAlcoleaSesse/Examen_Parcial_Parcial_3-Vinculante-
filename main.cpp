@@ -9,7 +9,7 @@
 int main() {
     try {
         Launcher launcher;
-         launcher.imprimirTareas(); // Print the list of tasks before user input
+         launcher.imprimirTareas();
         launcher.ejecutar();
     } catch (const std::exception& e) {
         std::cerr << "Error: " << e.what() << std::endl;
