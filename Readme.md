@@ -1,92 +1,89 @@
-Estimado estudiante,
+# Sistema de Gestión de Tareas y Actores
 
-Para garantizar una correcta evaluación de tus habilidades y entendimiento en la programación en C++, hemos establecido un conjunto de condiciones que deberás seguir al momento de entregar tus respuestas al examen. La estructura y presentación de tu entrega son esenciales para facilitar el proceso de corrección y asegurarnos de que hemos evaluado todos tus esfuerzos de manera justa.
+## Descripción
 
-Instrucciones para la entrega:
+Este proyecto implementa un sistema para gestionar tareas asignadas a diferentes actores. Cada tarea tiene una descripción, duración, y es asignada a un actor que puede completarla en un marco de tiempo definido. El sistema evalúa si los actores pueden completar sus tareas a tiempo.
 
-Repositorio en GitHub:
+## Estructura del Proyecto
 
-Todo tu trabajo debe estar contenido en un repositorio en GitHub.
-Asegúrate de que el repositorio sea privado al inicio, y podrás hacerlo público después de que finalice el período de revisión del examen (si así lo deseas).
-Fichero ZIP:
+El proyecto está compuesto por las siguientes clases:
 
-Una vez hayas terminado de resolver el examen, crea un archivo ZIP de todo el repositorio.
-El nombre del archivo ZIP debe seguir el formato: Apellido_Nombre_ExamenCPP.zip (reemplaza Apellido y Nombre con tu apellido y nombre respectivamente).
-Fichero README.md:
+1. **Tarea** (`Tarea.h`, `Tarea.cpp`):
+    - Representa una tarea con:
+        - `id`: Identificador único.
+        - `descripcion`: Descripción de la tarea.
+        - `duracion`: Duración estimada en minutos.
 
-Dentro de tu repositorio, debes incluir un archivo README.md.
-Este archivo debe contener:
-El link directo a tu repositorio de GitHub.
-Una descripción breve de cada uno de los ejercicios resueltos, con referencias a los archivos o carpetas específicos donde se puede encontrar cada solución.
-El uso adecuado de Markdown en tu README.md para estructurar y formatear el contenido será valorado positivamente.
-Envío:
+2. **Actor** (`Actor.h`, `Actor.cpp`):
+    - Representa un actor que realiza tareas.
+    - Contiene:
+        - `id`: Identificador del actor.
+        - `descripcion`: Descripción del actor.
+        - `tareas`: Lista de tareas asignadas al actor.
 
-Entrega el archivo ZIP a través de la plataforma o método que se te indique (por ejemplo, un sistema de gestión de aprendizaje, correo electrónico, etc.).
-Asegúrate de enviar tu trabajo antes de la fecha y hora límite. Las entregas fuera de plazo pueden no ser evaluadas o incurrir en penalizaciones.
-Otros aspectos a considerar:
+3. **Launcher** (`Launcher.h`, `Launcher.cpp`):
+    - Es el controlador principal del sistema.
+    - Funcionalidades:
+        - Crear tareas.
+        - Crear actores.
+        - Asignar tareas a actores.
+        - Ejecutar y mostrar los resultados.
 
-Asegúrate de que tu código esté bien comentado, organizado y que sea fácil de leer y entender.
-Si utilizas alguna referencia externa para resolver algún ejercicio, es esencial que lo cites en tu README.md.
-Siguiendo estas condiciones y presentando tu trabajo de manera organizada, nos ayudarás a llevar a cabo un proceso de revisión más eficiente. Deseamos que demuestres todo tu conocimiento y habilidades en este examen. ¡Buena suerte!
+4. **Programa principal** (`main.cpp`):
+    - Punto de entrada del programa. Inicializa el sistema y ejecuta las funcionalidades de `Launcher`.
 
+## Optimización del Cronograma
 
-Bienvenidos a este reto práctico de algoritmos. En este ejercicio, pondrán a prueba sus habilidades para planificar y optimizar recursos bajo un escenario realista de alta presión.
+### Problema Detectado
 
-Enunciado del Problema:
+La tarea de llevar las maletas a la oficina (**Tarea H**) ocurría después de que el CEO debería estar en camino al aeropuerto (**Tarea M**). Esto causaba un retraso crítico en la ejecución del itinerario.
 
-Ustedes son Project Managers en una empresa internacional. Reciben una llamada urgente de un alto ejecutivo, informándoles que el CEO de la compañía ha aterrizado en Barcelona desde Estados Unidos y tiene una reunión crucial para las 19:30 en la ciudad. Sin embargo, el ejecutivo cuenta con solo 100 minutos antes de que cierre la facturación para su vuelo desde Madrid a Barcelona.
+### Solución Propuesta
 
-Objetivo: Debido a la urgencia de la situación, necesitan optimizar las tareas para cumplir con el objetivo de que el ejecutivo llegue a la reunión a tiempo. A continuación se detalla la lista de tareas necesarias, sus descripciones y las duraciones de cada una. Su misión es identificar las dependencias entre las tareas, calcular el tiempo total para completar las tareas en el orden adecuado, y determinar si es posible cumplir con el plazo de 100 minutos.
+Se reorganizó el cronograma para paralelizar tareas dependientes y asegurar que las maletas lleguen a la oficina antes de que el CEO parta hacia el aeropuerto. Esto se logró sin eliminar ni modificar las tareas existentes.
 
-Tareas, Descripciones y Duraciones:
+### Cronograma Ajustado
 
-A: Reserva de vuelo (20 min)
+1. **Inicio de tareas simultáneas**:
+    - **Tarea B**: Informar a casa para empacar.
+    - **Tarea A**: Reserva de vuelo.
+    - **Tarea I**: Conversación sobre documentos requeridos.
+    - **Tarea J**: Dictar instrucciones para ausencia.
 
-B: Informar a casa para empacar (5 min)
+2. **Paralelización clave**:
+    - **Tarea G** (Recoger las maletas de casa) comienza mientras **Tarea C** (Empacar maletas) está en curso.
+    - **Tarea H** (Llevar maletas a la oficina) comienza parcialmente dependiente de **Tarea G**.
 
-C: Empacar maletas (40 min)
+3. **Finalización**:
+    - Las maletas llegan a la oficina a los 75 minutos.
+    - El CEO parte hacia el aeropuerto inmediatamente después, completando **Tarea M** en exactamente 100 minutos.
 
-D: Preparación del billete por la agencia (10 min)
+### Asignación de Tareas por Actor
 
-E: Recoger el billete de la agencia (5 min)
+- **Agente 1**: Reserva de vuelo, recoger billete, llevar billete a la oficina, llevar maletas a la oficina.
+- **Agente 2**: Informar a casa, recoger maletas.
+- **Agente 3**: Conversación sobre documentos requeridos, reunir y organizar documentos.
+- **Agente 4**: Dictar instrucciones, asistir en la preparación del billete.
+- **Agente 5 (Agencia de Viajes)**: Preparar billete.
+- **Familiares en Casa**: Empacar maletas.
+- **CEO**: Coordinar documentos y partir al aeropuerto.
 
-F: Llevar el billete a la oficina (10 min)
+### Resultados
 
-G: Recoger las maletas de casa (20 min)
+El itinerario ajustado asegura que:
+- Todas las tareas se completan dentro del límite de **100 minutos**.
+- El CEO recibe las maletas y documentos necesarios a tiempo.
 
-H: Llevar maletas a la oficina (25 min)
+## Diagrama de Flujo
 
-I: Conversación sobre documentos requeridos (35 min)
-
-J: Dictar instrucciones para ausencia (25 min)
-
-K: Reunir documentos (15 min)
-
-L: Organizar documentos (5 min)
-
-M: Viajar al aeropuerto y facturar (25 min)
-
-Dependencias entre tareas:
-
-Algunas tareas deben ser realizadas antes que otras, por ejemplo, no se puede viajar al aeropuerto antes de haber recogido las maletas.
-Además, la reserva del vuelo debe completarse antes de recoger el billete, y la preparación del billete debe ocurrir antes de llevar el billete a la oficina.
-Objetivos del Reto:
-
-Definir el Objetivo del Proyecto: Identificar el propósito principal del proyecto (optimizar la gestión del tiempo para cumplir con el plazo de 100 minutos) y no solo las tareas.
-
-Diagrama de Flujo del Cronograma: Crear un diagrama de flujo para visualizar el cronograma del proyecto, teniendo en cuenta solo las dependencias entre tareas y no restricciones de recursos.
-
-Desarrollo de Algoritmo en C++:
-
-Crear un programa en C++ que permita calcular el orden de ejecución de las tareas en función de sus dependencias.
-Determinar el tiempo total necesario para completar todas las tareas.
-Evaluar si es posible completar las tareas en 100 minutos o menos.
-Imprimir el orden óptimo de ejecución de las tareas y su tiempo total.
-Restricciones:
-
-El tiempo máximo permitido para completar las tareas es de 100 minutos.
-El algoritmo debe gestionar de forma eficiente las dependencias entre las tareas, de tal manera que optimice el tiempo de ejecución.
-Entrega:
-
-Código fuente en C++ que implemente la solución al problema.
-Diagrama de flujo que represente el cronograma de ejecución de las tareas.
+```mermaid
+graph TD
+    A[Inicio] --> B[Crear tareas]
+    B --> C[Crear actores]
+    C --> D[Asignar tareas]
+    D --> E[Calcular tiempos]
+    E --> F{¿Se completan a tiempo?}
+    F -->|Sí| G[Mostrar resumen]
+    F -->|No| H[Notificar problemas]
+    G --> I[Fin]
+    H --> I
